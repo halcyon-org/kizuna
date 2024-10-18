@@ -14,6 +14,7 @@ import (
 
 type ExternalInformationUsecase interface {
 	SetExternalInformation(ctx context.Context, externalInformation *v1.ExternalInformation) (*domain.ExternalInformation, error)
+	ListExternalInformation(ctx context.Context, limit int32) ([]*domain.ExternalInformation, error)
 	GetExternalInformation(ctx context.Context, id string) (*domain.ExternalInformation, error)
 }
 
@@ -71,6 +72,20 @@ func (u *externalInformationUsecaseImpl) SetExternalInformation(ctx context.Cont
 
 	domainData := domain.ToDomainExternalInformation(*data)
 	return &domainData, nil
+}
+
+func (u *externalInformationUsecaseImpl) ListExternalInformation(ctx context.Context, limit int32) ([]*domain.ExternalInformation, error) {
+	dataList, err := u.externalInformationRepository.GetAllExternalInformation(ctx, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	var domainDataList = make([]*domain.ExternalInformation, len(dataList))
+	for i, data := range dataList {
+		domainData := domain.ToDomainExternalInformation(*data)
+		domainDataList[i] = &domainData
+	}
+	return domainDataList, nil
 }
 
 func (u *externalInformationUsecaseImpl) GetExternalInformation(ctx context.Context, id string) (*domain.ExternalInformation, error) {

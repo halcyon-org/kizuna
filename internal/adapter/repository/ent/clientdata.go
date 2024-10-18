@@ -39,13 +39,7 @@ func (r *clientInformationRepositoryImpl) CreateClientInformation(ctx context.Co
 }
 
 func (r *clientInformationRepositoryImpl) GetAllClientInformation(ctx context.Context, limit int32) ([]*ent.ClientInformation, error) {
-	clientInformationList, err := r.DB.ClientInformation.Query().
-		Limit(int(limit)).
-		All(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return clientInformationList, nil
+	return r.DB.ClientInformation.Query().Limit(int(limit)).All(ctx)
 }
 
 func (r *clientInformationRepositoryImpl) DeleteClientInformation(ctx context.Context, client_id pulid.ID) (*pulid.ID, error) {

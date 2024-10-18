@@ -12,8 +12,9 @@ import (
 type ExternalInformationRepository interface {
 	CreateExternalInformation(ctx context.Context, name string, description string, license string, licenseDescription string, apiKey string) (*ent.ExternalInformation, error)
 	UpdateExternalInformation(ctx context.Context, external_id pulid.ID, name string, description string, license string, licenseDescription string) (*ent.ExternalInformation, error)
+	GetAllExternalInformation(ctx context.Context, limit int32) ([]*ent.ExternalInformation, error)
 	GetExternalInformationByAPIKey(ctx context.Context, apiKey string) (*ent.ExternalInformation, error)
-	GetExternalInformationByID(ctx context.Context, id pulid.ID) (*ent.ExternalInformation, error)
+	GetExternalInformationByID(ctx context.Context, external_id pulid.ID) (*ent.ExternalInformation, error)
 }
 
 type externalInformationRepositoryImpl struct {
@@ -54,10 +55,14 @@ func (r *externalInformationRepositoryImpl) UpdateExternalInformation(ctx contex
 	return externalInformation, nil
 }
 
+func (r *externalInformationRepositoryImpl) GetAllExternalInformation(ctx context.Context, limit int32) ([]*ent.ExternalInformation, error) {
+	return r.DB.ExternalInformation.Query().Limit(int(limit)).All(ctx)
+}
+
 func (r *externalInformationRepositoryImpl) GetExternalInformationByAPIKey(ctx context.Context, apiKey string) (*ent.ExternalInformation, error) {
 	return r.DB.ExternalInformation.Query().Where(externalinformation.APIKey(apiKey)).Only(ctx)
 }
 
-func (r *externalInformationRepositoryImpl) GetExternalInformationByID(ctx context.Context, id pulid.ID) (*ent.ExternalInformation, error) {
-	return r.DB.ExternalInformation.Query().Where(externalinformation.ID(id)).Only(ctx)
+func (r *externalInformationRepositoryImpl) GetExternalInformationByID(ctx context.Context, external_id pulid.ID) (*ent.ExternalInformation, error) {
+	return r.DB.ExternalInformation.Query().Where(externalinformation.ID(external_id)).Only(ctx)
 }
